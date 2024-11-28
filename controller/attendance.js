@@ -3,6 +3,7 @@ import {
   getAttendance,
   findAttendance,
   attendanceCheckout,
+  getEventAttendees,
 } from "../model/AttendanceModel.js";
 import { getEventById } from "../model/EventModel.js";
 import { getUserById } from "../model/UserModel.js";
@@ -115,6 +116,84 @@ export const fetchAttendance = async (req, res, next) => {
     });
   } catch (err) {
     //check if invalid id format
+    if (err.name === "Cast Error") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format",
+      });
+    }
+
+    const error = new Error(err.message);
+    error.status = 500;
+    error.success = false;
+    return next(error);
+  }
+};
+
+export const fetchEventAttendance = async (req, res, next) => {
+  const eventId = req.params.id;
+
+  try {
+    const [attendance] = await getEventAttendees(eventId);
+
+    if (attendance.length <= 0) {
+      const error = new Error("No attendance found");
+      error.status = 200;
+      error.success = true;
+      return next(error);
+    }
+
+    // Process the attendance data
+    const students = await Promise.all(
+      attendance.map(async (data) => {
+        // Get student data
+        const [sData] = await getStudentById(data.student);
+
+        // Get user data based on student userId
+        const [uData] = await getUserById(sData[0].userId);
+
+        const commonData = {
+          id: uData[0].id,
+          studId: sData[0].studId,
+          firstname: uData[0].firstname,
+          lastname: uData[0].lastname,
+          middlename: uData[0].middlename,
+          email: uData[0].email,
+          course: sData[0].course,
+          year: sData[0].year,
+          profilePicture: sData[0].profilePicture,
+        };
+
+        // Create separate records for checkIn and checkOut
+        const records = [];
+        if (data.checkIn) {
+          records.push({
+            ...commonData,
+            checkIn: data.checkIn,
+          });
+        }
+        if (data.checkOut) {
+          records.push({
+            ...commonData,
+            checkOut: data.checkOut,
+          });
+        }
+
+        return records;
+      })
+    );
+
+    // Flatten and sort records by the latest date
+    const sortedStudents = students
+      .flat()
+      .sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+
+    res.status(200).json({
+      success: true,
+      data: sortedStudents,
+    });
+  } catch (err) {
+    // Check if invalid ID format
     if (err.name === "Cast Error") {
       return res.status(400).json({
         success: false,

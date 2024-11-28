@@ -16,6 +16,12 @@ export const getAttendance = async () => {
   let sql = `SELECT student, event, checkIn, checkOut FROM ${table}`;
   return db.promise().query(sql);
 };
+export const getEventAttendees = async (eventId) =>{
+  let sql = `SELECT * FROM ${table} WHERE event = ? ORDER BY createdAt DESC`;
+  const values = [eventId];
+  return db.promise().query(sql, values);
+}
+
 //get student using student id
 export const findAttendance = async (studentId, eventId) => {
   let sql = `SELECT * FROM ${table} WHERE event = ? && student = ?`;
