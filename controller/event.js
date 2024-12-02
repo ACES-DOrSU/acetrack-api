@@ -53,12 +53,12 @@ export const modifyEvent = async (req, res, next) => {
 
     // Use existing values if the new data is an empty string or null
     const eventData = {
-      name: data.name || data.name, // If data.name is empty or null, fallback to data.firstname
-      description: data.description || data.description,
-      location: data.location || data.location,
-      startDate: data.startDate || data.startDate,
-      endDate: data.endDate || data.endDate,
-      status: data.status || data.status,
+      name: data.name || event.name, // If data.name is empty or null, fallback to data.firstname
+      description: data.description || event.description,
+      location: data.location || event.location,
+      startDate: data.startDate || event.startDate,
+      endDate: data.endDate || event.endDate,
+      status: data.status || event.status,
     };
 
     await updateEvent(req.params.id, eventData);
