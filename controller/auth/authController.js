@@ -62,7 +62,7 @@ export const login = async (req, res, next) => {
       //send refresh token as HTTP-only cookie
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       }); // 7 days
@@ -71,7 +71,7 @@ export const login = async (req, res, next) => {
     //send refresh token as HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     }); // 7 days
