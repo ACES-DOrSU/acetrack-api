@@ -45,9 +45,13 @@ export const login = async (req, res, next) => {
     );
 
     //generate refresh token
-    const refreshToken = jwt.sign({ userId: user.id, role: user.role }, REFRESH_KEY, {
-      expiresIn: REFRESH_EXPIRATION,
-    });
+    const refreshToken = jwt.sign(
+      { userId: user.id, role: user.role },
+      REFRESH_KEY,
+      {
+        expiresIn: REFRESH_EXPIRATION,
+      }
+    );
 
     //for testing
     if (process.env.VERSION == "prod") {
@@ -118,7 +122,7 @@ export const register = async (req, res, next) => {
       password: hashPassword,
       role: ROLE,
     };
-
+    await createUser(userData);
     const studentData = {
       studentId: data.studentId,
       userId: userId,
@@ -126,7 +130,6 @@ export const register = async (req, res, next) => {
       year: data.year,
     };
 
-    await createUser(userData);
     await createStudent(studentData);
     res.status(201).json({ success: true, message: "User created" });
   } catch (err) {
@@ -170,7 +173,11 @@ export const refreshAccessToken = async (req, res) => {
 
       // Generate a new access token with both id and email in the payload
       const newAccessToken = jwt.sign(
-        { userId: currentUser.id, email: createUser.email,  role: currentUser.role},
+        {
+          userId: currentUser.id,
+          email: createUser.email,
+          role: currentUser.role,
+        },
         ACCESS_KEY, //secret key
         { expiresIn: ACCESS_EXPIRATION } // Token expiration time
       );
