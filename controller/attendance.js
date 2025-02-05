@@ -132,7 +132,7 @@ export const fetchAttendance = async (req, res, next) => {
 
 export const fetchEventAttendance = async (req, res, next) => {
   const eventId = req.params.id;
-
+  console.log(eventId)
   try {
     const [attendance] = await getEventAttendees(eventId);
 
