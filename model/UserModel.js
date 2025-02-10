@@ -47,6 +47,24 @@ export const updateUser = async (userId, userData) => {
   return db.promise().query(sql, values);
 };
 
+export const setOTP = async (userId, otpData) =>{
+  let sql = `UPDATE ${table} SET resetOTP = ?, otpExpires= ? WHERE id = ?`;
+  const values = [
+    otpData.resetOtp,
+    otpData.otpExpires,
+    userId,
+  ];
+
+  return db.promise().query(sql, values);
+}
+
+export const updatePassword = async (userId, newPassword) =>{
+  let sql = `UPDATE ${table} SET password = ? WHERE id = ?`;
+  const values = [newPassword, userId];
+
+  return db.promise().query(sql, values);
+}
+
 export const deleteUser = async (id) => {
   let sql = `DELETE FROM ${table} WHERE id = ?`;
   

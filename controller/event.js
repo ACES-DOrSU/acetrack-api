@@ -15,14 +15,28 @@ export const insertEvent = async (req, res, next) => {
     const data = req.body;
     const eventId = ulid(); //generate unique id
     const status = "0";
+    /**
+     * Might not push it...
+     */
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
+    //format to mysql datetime format
+    const convertedStartDate = startDate
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+    const convertedEndDate = endDate
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
 
     const eventData = {
       id: eventId,
       name: data.name,
       description: data.description,
       location: data.location,
-      startDate: data.startDate,
-      endDate: data.endDate,
+      startDate: convertedStartDate,
+      endDate: convertedEndDate,
       status: status,
     };
 
@@ -206,8 +220,8 @@ export const removeEvent = async (req, res, next) => {
       error.success = false;
       return next(error);
     }
-     // If the event has an existing baner in Cloudinary, delete it
-     if (event.banner) {
+    // If the event has an existing baner in Cloudinary, delete it
+    if (event.banner) {
       const publicId = `acetrack/${getCloudinaryPublicId(event.banner)}`;
 
       await cloudinary.uploader.destroy(publicId);

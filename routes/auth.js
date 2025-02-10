@@ -1,10 +1,11 @@
 import express from "express";
-import { login, refreshAccessToken, register } from "../controller/auth/authController.js";
+import { forgotPassword, login, refreshAccessToken, register, resetPassword, verifyOtp } from "../controller/auth/authController.js";
 import {
   loginValidationRules,
   userValidationRules,
   validate,
 } from "../middleware/validator.js";
+import {authenticate, authorizeRole} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -22,4 +23,7 @@ router.post(
 //refresh token
 router.post("/refreshToken", refreshAccessToken);
 
+router.post("/forgot-password", express.json(), forgotPassword);
+router.post("/reset-password/", express.json(), resetPassword);
+router.post("/verify-otp/", express.json(), verifyOtp);
 export default router;
