@@ -170,7 +170,6 @@ export const forgotPassword = async (req, res, next) => {
       Date.now() + process.env.OTP_EXPIRY_MINUTES * 60000
     ); // OTP valid for 5 minutes
 
-    console.log(expiryTime);
     // Store OTP in the database
     await setOTP(user.id, {
       resetOtp: otp,
