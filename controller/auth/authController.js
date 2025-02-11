@@ -179,7 +179,10 @@ export const forgotPassword = async (req, res, next) => {
     await sendMail(
       email,
       "Password Reset OTP",
-      `<p>Your OTP for password reset is: <strong>${otp}</strong>. It expires in 5 minutes.</p>`
+      {
+        firstname: user.firstname,
+        otp
+      }
     );
 
     res.status(200).json({ success: true, message: "OTP sent to email" });
