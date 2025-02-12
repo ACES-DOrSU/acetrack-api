@@ -1,74 +1,186 @@
 import nodemailer from "nodemailer";
-// Email transporter setup
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
-    // user: "japinanclarence@gmail.com",
-    // pass:"uzfufenwxeiufdli",
   },
 });
 
-export const sendMail = async (to, subject, msg) => {
-  transporter.sendMail({
+const emailTemplate = (message) => {
+  return `
+   <body style="font-family: 'Poppins', Arial, sans-serif">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center" style="padding: 20px">
+        <table
+          class="content"
+          width="600"
+          border="0"
+          cellspacing="0"
+          cellpadding="0"
+          style="border-collapse: collapse; border: 1px solid #cccccc"
+        >
+          <tr>
+            <td
+              class="header"
+              style="
+                padding: 40px;
+                text-align: center;
+                color: #ff8c42;
+                font-size: 24px;
+                font-weight: bold;
+                border-bottom: 2px solid #ff8c42;
+              "
+            >
+              ACETRACK
+            </td>
+          </tr>
+           <tbody style="background: url(cid:stallion) no-repeat center;">
+            <tr>
+              <td
+                class="body"
+                style="
+                  padding: 40px;
+                  text-align: left;
+                  font-size: 16px;
+                  font-weight: bold;
+                  line-height: 1.6;
+                "
+              >
+                Hello, ${message.firstname}! <br />
+                <p style="font-size: 12px; font-weight: normal">
+                  Your One-Time Password (OTP) is below. It expires in 5
+                  minutes.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 200px; text-align: center; position: relative">
+                <div
+                  style="
+                    color: #2c2d2d;
+                    text-decoration: none;
+                    letter-spacing: 20px;
+                    font-size: 40px;
+                    font-weight: bold;
+                    position: relative;
+                    z-index: 1;
+                    display: inline-block;
+                    /* background: rgba(255, 255, 255, 0.8); */
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                  "
+                >
+                  ${message.otp}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                class="body"
+                style="padding: 40px; text-align: left; font-size: 12px"
+              >
+                Never share this code with anyone.
+              </td>
+            </tr>
+          </tbody>
+          <tr>
+            <td
+              class="footer"
+              style="background-color: #ff8c42; padding: 40px; font-size: 12px"
+            >
+              <table
+                role="presentation"
+                width="100%"
+                border="0"
+                cellspacing="0"
+                cellpadding="0"
+              >
+                <tr>
+                  <td align="right">
+                    <table
+                      role="presentation"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tr>
+                        <td
+                          style="
+                            color: white;
+                            text-align: right;
+                            padding-right: 10px;
+                          "
+                        >
+                          <h1
+                            style="
+                              margin: 0;
+                              font-weight: normal;
+                              font-size: 18px;
+                            "
+                          >
+                            ACES
+                          </h1>
+                          <p style="margin: 0; font-size: 12px">
+                            Davao Oriental State University
+                          </p>
+                        </td>
+                        <td>
+                          <img
+                            src="cid:acesLogo"
+                            alt="ACES Logo"
+                            style="height: 50px; vertical-align: middle"
+                          />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+
+
+  `;
+};
+
+// Attach images when sending the email
+export const sendMail = async (to, subject, message) => {
+  const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
     subject,
-    html: emailTemplate(msg),
-  });
-};
+    html: emailTemplate(message),
+    attachments: [
+      {
+        filename: "ACES_LOGO.png",
+        path: path.join(__dirname, "../assets/ACES_LOGO.png"),
+        cid: "acesLogo",
+      },
+      {
+        filename: "stallion.png",
+        path: path.join(__dirname, "../assets/stallion.png"),
+        cid: "stallion",
+      },
+    ],
+  };
 
-const emailTemplate = (message) => {
-  return `
-    <body style="font-family: 'Poppins', Arial, sans-serif">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-            <td align="center" style="padding: 20px;">
-                <table class="content" width="600" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: 1px solid #cccccc;">
-                    <!-- Header -->
-                    <tr>
-                        <td class="header" style="background-color: #345C72; padding: 40px; text-align: center; color: white; font-size: 24px;">
-                        AceTrack
-                        </td>
-                    </tr>
-
-                    <!-- Body -->
-                    <tr>
-                        <td class="body" style="padding: 40px; text-align: left; font-size:16px; font-weight:bold; line-height: 1.6;">
-                        Hello, ${message.firstname}! <br>
-                        <p style="font-size: 12px; font-weight:normal;"> Your One-Time Password (OTP) is below. It expires in 5 minutes.  </p>        
-                        </td>
-                    </tr>
-
-                    <!-- Call to action Button -->
-                    <tr>
-                        <td style="padding: 40px; text-align: center; background-color:#F5F5F5">
-                            <!-- CTA Button -->
-                            <table cellspacing="0" cellpadding="0" style="margin: auto;">
-                                <tr>
-                                    <td align="center" style="font-size:20px; padding-block:20px; font-weight:bold;">
-                                        <div href="" style="color:#1E1E1E; padding-block:20px; text-decoration: none; font-weight: bold;">${message.otp}</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="body" style="padding: 40px; text-align: left; font-size: 12px; line-height: 1.6;">
-                            Never share this code with anyone.
-                        </td>
-                    </tr>
-                    <!-- Footer -->
-                    <tr>
-                        <td class="footer" style="background-color: #333333; padding: 40px; text-align: center; color: white; font-size: 14px;">
-                        Copyright &copy; 2024 | AceTrack
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-  `;
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent: " + info.response);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
 };
