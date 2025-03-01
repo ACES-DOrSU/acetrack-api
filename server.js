@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 
 const port = process.env.PORT || 8080;
 const app = express();
+const host = '0.0.0.0';
 
 const corsOptions = {
   origin: true,
@@ -40,4 +41,4 @@ app.use((req, res, next) => {
 //implement error handler
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(port, host, () => console.log(`Server is running on http://${host}:${port}`));
