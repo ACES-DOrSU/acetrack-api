@@ -30,6 +30,10 @@ app.use("/api/", auth);
 app.use("/api/", user);
 //event routes
 app.use("/api/", event);
+
+app.use("/", (req, res) =>{
+  res.status(200).end("🚀 Welcome to AceTrack API! Your gateway to efficient tracking and management.")
+})
 // Handle 404 errors for undefined routes
 app.use((req, res, next) => {
   res.status(404).json({
