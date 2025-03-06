@@ -7,6 +7,9 @@ import students from "./routes/student.js";
 import errorHandler from "./middleware/error.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const port = process.env.PORT || 8080;
 const app = express();

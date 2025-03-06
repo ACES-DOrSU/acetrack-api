@@ -12,6 +12,9 @@ import {
 import jwt from "jsonwebtoken";
 import { sendMail } from "../../helper/sendMail.js";
 import crypto from "crypto";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const ACCESS_KEY = process.env.ACCESS_TOKEN_SECRET;
 const ACCESS_EXPIRATION = process.env.ACCESS_TOKEN_EXPIRATION;
