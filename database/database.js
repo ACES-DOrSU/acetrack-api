@@ -1,4 +1,7 @@
 import mysql from "mysql2";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const HOST = process.env.DB_HOST;
 const USER = process.env.DB_USERNAME;
