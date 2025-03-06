@@ -7,7 +7,7 @@ import {
 } from "../model/AttendanceModel.js";
 import { getEventById } from "../model/EventModel.js";
 import { getUserById } from "../model/UserModel.js";
-import { getStudentById } from "../model/StudentModel.js";
+import { getStudent, getStudentById } from "../model/StudentModel.js";
 import { ulid } from "ulidx";
 
 export const markAttendance = async (req, res, next) => {
@@ -132,7 +132,7 @@ export const fetchAttendance = async (req, res, next) => {
 
 export const fetchEventAttendance = async (req, res, next) => {
   const eventId = req.params.id;
-  console.log(eventId)
+
   try {
     const [attendance] = await getEventAttendees(eventId);
 
@@ -151,7 +151,7 @@ export const fetchEventAttendance = async (req, res, next) => {
 
         // Get user data based on student userId
         const [uData] = await getUserById(sData[0].userId);
-
+        
         const commonData = {
           id: uData[0].id,
           studId: sData[0].studId,
@@ -183,6 +183,9 @@ export const fetchEventAttendance = async (req, res, next) => {
       })
     );
 
+    const allMembers = await getStudent();
+    const totalStudents = allMembers[0].length;
+
     // Flatten and sort records by the latest date
     const sortedStudents = students
       .flat()
@@ -190,6 +193,9 @@ export const fetchEventAttendance = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      totalStudents,
+      totalAttendees : attendance.length,
+      totalAbsent: totalStudents - attendance.length,
       data: sortedStudents,
     });
   } catch (err) {
